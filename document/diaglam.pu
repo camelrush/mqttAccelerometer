@@ -1,0 +1,29 @@
+@startuml image
+title Remote AccelerorMeter By MQTT(over Internet)
+cloud AWS{
+    card IoTCore{
+        component MQTTMsgBroker
+    }
+}
+node Outside{
+    actor me
+    card Mobile{
+        card WebBrowser{
+            component "Paho on\nJavaScript" as JsPaho
+            component "chartjs\nplugin\nstreaming" as Chart
+        }
+        JsPaho-down->Chart:graph draw
+    }
+}
+node Home{
+    card RaspberryPi{
+        component "Paho on\nPython" as PythonPaho
+        card GPIO
+    }
+    card "AcceloerorMeter\nmpu6500" as AcceloerorMeter
+}
+JsPaho<-up-MQTTMsgBroker:<font color=red>SensorData\nax,ay,az\n(Sub) 
+PythonPaho-up->MQTTMsgBroker:<font color=red>SensorData\nax,ay,az\n(Pub)
+PythonPaho<-right-GPIO:<font color=red>I2C
+GPIO<-down-AcceloerorMeter:<font color=red>SensorData\nax,ay,az
+@enduml
